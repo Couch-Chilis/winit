@@ -12,7 +12,7 @@ use objc2::runtime::Object;
 use objc2::{class, msg_send};
 use raw_window_handle::{RawDisplayHandle, RawWindowHandle, UiKitDisplayHandle, UiKitWindowHandle};
 
-use super::uikit::{UIApplication, UIScreen, UIScreenOverscanCompensation};
+use super::uikit::{UIApplication, UIStatusBarStyle, UIScreen, UIScreenOverscanCompensation};
 use super::view::{WinitUIWindow, WinitView, WinitViewController};
 use crate::{
     dpi::{self, LogicalPosition, LogicalSize, PhysicalPosition, PhysicalSize, Position, Size},
@@ -546,6 +546,10 @@ impl Inner {
     pub fn set_prefers_status_bar_hidden(&self, hidden: bool) {
         self.view_controller.setPrefersStatusBarHidden(hidden);
     }
+
+    pub fn set_preferred_status_bar_style(&self, preferred_status_bar_style: UIStatusBarStyle) {
+        self.view_controller.setPreferredStatusBarStyle(preferred_status_bar_style);
+    }
 }
 
 impl Inner {
@@ -652,11 +656,25 @@ impl From<&Object> for WindowId {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct PlatformSpecificWindowBuilderAttributes {
     pub scale_factor: Option<f64>,
     pub valid_orientations: ValidOrientations,
     pub prefers_home_indicator_hidden: bool,
     pub prefers_status_bar_hidden: bool,
+    pub preferred_status_bar_style: UIStatusBarStyle,
     pub preferred_screen_edges_deferring_system_gestures: ScreenEdge,
+}
+
+impl Default for PlatformSpecificWindowBuilderAttributes {
+    fn default() -> Self {
+        Self {
+            scale_factor: None,
+            valid_orientations: ValidOrientations::default(),
+            prefers_home_indicator_hidden: true,
+            prefers_status_bar_hidden: false,
+            preferred_status_bar_style: UIStatusBarStyle::DarkContent,
+            preferred_screen_edges_deferring_system_gestures: ScreenEdge::default(),
+        }
+    }
 }

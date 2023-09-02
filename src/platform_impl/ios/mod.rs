@@ -88,6 +88,7 @@ pub(crate) use self::{
 };
 
 use self::uikit::UIScreen;
+pub(crate) use self::uikit::UIStatusBarStyle;
 pub(crate) use crate::icon::NoIcon as PlatformIcon;
 pub(self) use crate::platform_impl::Fullscreen;
 

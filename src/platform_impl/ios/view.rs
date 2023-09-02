@@ -7,7 +7,7 @@ use objc2::{declare_class, extern_methods, msg_send, msg_send_id, ClassType};
 
 use super::uikit::{
     UIApplication, UIDevice, UIEvent, UIForceTouchCapability, UIInterfaceOrientationMask,
-    UIResponder, UITouch, UITouchPhase, UITouchType, UITraitCollection, UIView, UIViewController,
+    UIResponder, UIStatusBarStyle, UITouch, UITouchPhase, UITouchType, UITraitCollection, UIView, UIViewController,
     UIWindow,
 };
 use super::window::WindowId;
@@ -263,6 +263,7 @@ impl WinitView {
 declare_class!(
     pub(crate) struct WinitViewController {
         _prefers_status_bar_hidden: bool,
+        _preferred_status_bar_style: UIStatusBarStyle,
         _prefers_home_indicator_auto_hidden: bool,
         _supported_orientations: UIInterfaceOrientationMask,
         _preferred_screen_edges_deferring_system_gestures: UIRectEdge,
@@ -290,6 +291,17 @@ declare_class!(
         #[sel(setPrefersStatusBarHidden:)]
         fn set_prefers_status_bar_hidden(&mut self, val: bool) {
             *self._prefers_status_bar_hidden = val;
+            self.setNeedsStatusBarAppearanceUpdate();
+        }
+
+        #[sel(preferredStatusBarStyle)]
+        fn preferred_status_bar_style(&self) -> UIStatusBarStyle {
+            *self._preferred_status_bar_style
+        }
+
+        #[sel(setPreferredStatusBarStyle:)]
+        fn set_preferred_status_bar_style(&mut self, val: UIStatusBarStyle) {
+            *self._preferred_status_bar_style = val;
             self.setNeedsStatusBarAppearanceUpdate();
         }
 
@@ -344,6 +356,9 @@ extern_methods!(
         #[sel(setPrefersStatusBarHidden:)]
         pub(crate) fn setPrefersStatusBarHidden(&self, flag: bool);
 
+        #[sel(setPreferredStatusBarStyle:)]
+        pub(crate) fn setPreferredStatusBarStyle(&self, val: UIStatusBarStyle);
+
         #[sel(setSupportedInterfaceOrientations:)]
         pub(crate) fn setSupportedInterfaceOrientations(&self, val: UIInterfaceOrientationMask);
 
@@ -391,6 +406,8 @@ impl WinitViewController {
             unsafe { msg_send_id![msg_send_id![Self::class(), alloc], init] };
 
         this.setPrefersStatusBarHidden(platform_attributes.prefers_status_bar_hidden);
+
+        this.setPreferredStatusBarStyle(platform_attributes.preferred_status_bar_style);
 
         this.set_supported_interface_orientations(mtm, platform_attributes.valid_orientations);
 
