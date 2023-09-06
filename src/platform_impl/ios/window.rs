@@ -670,7 +670,7 @@ impl Default for PlatformSpecificWindowBuilderAttributes {
     fn default() -> Self {
         Self {
             scale_factor: None,
-            valid_orientations: ValidOrientations::default(),
+            valid_orientations: ValidOrientations::Portrait,
             prefers_home_indicator_hidden: true,
             prefers_status_bar_hidden: false,
             preferred_status_bar_style: UIStatusBarStyle::DarkContent,
